@@ -1,16 +1,40 @@
-# React + Vite
+# Ürün Yönetimi - React Arayüzü
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React (Vite) ile geliştirilmiş, `urun-api` (.NET backend) ile entegre çalışan bir ürün listeleme arayüzü.
 
-Currently, two official plugins are available:
+## Özellikler
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Bileşen (Component) mimarisi:** Yeniden kullanılabilir, prop alan React bileşenleri
+- **State yönetimi:** `useState` hook'u ile bileşen içi durum yönetimi
+- **API entegrasyonu:** `useEffect` ve `fetch` ile gerçek bir .NET Web API'sinden veri çekme
+- **CORS ile çalışan tam bir frontend-backend senaryosu**
 
-## React Compiler
+## Kullanılan Teknolojiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- Vite
+- JavaScript (JSX)
 
-## Expanding the Oxlint configuration
+## Bileşenler
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+| Bileşen | Açıklama |
+|---|---|
+| `Merhaba.jsx` | Prop alan basit bir karşılama bileşeni |
+| `Sayac.jsx` | `useState` ile artan/azalan sayaç |
+| `UrunListesi.jsx` | `urun-api`'den gerçek ürün verisi çeken, listeleyen bileşen |
+
+## Çalıştırma
+
+Bu proje, [`urun-api`](https://github.com/seyitaliyilmaz-dev/urun-api) projesinin **aynı anda çalışıyor olmasını** gerektirir (varsayılan olarak `http://localhost:5200` adresinde).
+
+```bash
+npm install
+npm run dev
+```
+
+Ardından tarayıcıda `http://localhost:5173` adresine gidin.
+
+## Not
+
+`urun-api` tarafında, bu arayüzün istek atabilmesi için CORS ayarı (`http://localhost:5173` için izin) ve `GetAll()` endpoint'i için `[AllowAnonymous]` tanımlanmıştır.
+
