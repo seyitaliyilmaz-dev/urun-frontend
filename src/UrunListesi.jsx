@@ -1,30 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import axios from 'axios';
 
-function UrunListesi() {
-  // urunler: API'den gelen ürünlerin tutulduğu state, başlangıçta boş dizi
+const UrunListesi = forwardRef((props, ref) => {
   const [urunler, setUrunler] = useState([]);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState(null);
 
-  // useEffect: bileşen ekrana ilk geldiğinde ÇALIŞACAK kodu belirtir.
-  // Boş dizi [] ikinci parametre olarak verildiği için, bu kod SADECE
-  // bileşen ilk oluştuğunda bir kez çalışır (her render'da değil).
+  async function urunleriGetir() {
+    try {
+      setYukleniyor(true);
+      const response = await axios.get('http://localhost:5200/api/urunler');
+      setUrunler(response.data);
+      setHata(null);
+    } catch (err) {
+      setHata('Sunucudan veri alınamadı');
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function urunSil(id) {
+    try {
+      await axios.delete(`http://localhost:5200/api/urunler/${id}`);
+      // Silme başarılıysa, listeyi tekrar sunucudan çekmek yerine
+      // state'i doğrudan (yerel olarak) güncelleyerek daha hızlı bir deneyim sağlıyoruz.
+      setUrunler((oncekiUrunler) => oncekiUrunler.filter((u) => u.urunID !== id));
+    } catch (err) {
+      alert('Ürün silinirken bir hata oluştu.');
+    }
+  }
+
+  useImperativeHandle(ref, () => ({
+    yenile: urunleriGetir
+  }));
+
   useEffect(() => {
-    fetch('http://localhost:5200/api/urunler')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Sunucudan veri alınamadı');
-        }
-        return response.json();
-      })
-      .then((veri) => {
-        setUrunler(veri);
-        setYukleniyor(false);
-      })
-      .catch((err) => {
-        setHata(err.message);
-        setYukleniyor(false);
-      });
+    urunleriGetir();
   }, []);
 
   if (yukleniyor) return <p>Yükleniyor...</p>;
@@ -37,11 +48,14 @@ function UrunListesi() {
         {urunler.map((urun) => (
           <li key={urun.urunID}>
             {urun.urunAdi} — {urun.fiyat} ₺
+            <button onClick={() => urunSil(urun.urunID)} style={{ marginLeft: '10px' }}>
+              Sil
+            </button>
           </li>
         ))}
       </ul>
     </div>
   );
-}
+});
 
 export default UrunListesi;
