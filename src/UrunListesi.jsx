@@ -22,8 +22,6 @@ const UrunListesi = forwardRef((props, ref) => {
   async function urunSil(id) {
     try {
       await axios.delete(`http://localhost:5200/api/urunler/${id}`);
-      // Silme başarılıysa, listeyi tekrar sunucudan çekmek yerine
-      // state'i doğrudan (yerel olarak) güncelleyerek daha hızlı bir deneyim sağlıyoruz.
       setUrunler((oncekiUrunler) => oncekiUrunler.filter((u) => u.urunID !== id));
     } catch (err) {
       alert('Ürün silinirken bir hata oluştu.');
@@ -38,17 +36,22 @@ const UrunListesi = forwardRef((props, ref) => {
     urunleriGetir();
   }, []);
 
-  if (yukleniyor) return <p>Yükleniyor...</p>;
-  if (hata) return <p style={{ color: 'red' }}>Hata: {hata}</p>;
+  if (yukleniyor) return <p className="text-gray-500">Yükleniyor...</p>;
+  if (hata) return <p className="text-red-600">Hata: {hata}</p>;
 
   return (
-    <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', marginTop: '10px' }}>
-      <h2>Ürünler (Backend'den Geldi)</h2>
-      <ul>
+    <div className="bg-white rounded-lg shadow p-5 border border-gray-200">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Ürünler</h2>
+      <ul className="divide-y divide-gray-100">
         {urunler.map((urun) => (
-          <li key={urun.urunID}>
-            {urun.urunAdi} — {urun.fiyat} ₺
-            <button onClick={() => urunSil(urun.urunID)} style={{ marginLeft: '10px' }}>
+          <li key={urun.urunID} className="flex items-center justify-between py-2">
+            <span className="text-sm text-gray-700">
+              {urun.urunAdi} — <span className="font-medium">{urun.fiyat} ₺</span>
+            </span>
+            <button
+              onClick={() => urunSil(urun.urunID)}
+              className="text-red-600 hover:text-red-800 text-xs font-medium"
+            >
               Sil
             </button>
           </li>
